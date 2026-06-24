@@ -1,4 +1,4 @@
-package com.gabutmen.ingetwoy.data
+package com.gabutmen.ingetwoy.data.model
 
 enum class ReminderUnit {
     DAY,

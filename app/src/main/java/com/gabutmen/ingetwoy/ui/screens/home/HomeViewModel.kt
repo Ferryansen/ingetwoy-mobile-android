@@ -1,9 +1,9 @@
 package com.gabutmen.ingetwoy.ui.screens.home
 
 import androidx.lifecycle.ViewModel
-import com.gabutmen.ingetwoy.data.Product
-import com.gabutmen.ingetwoy.data.ReminderOffset
-import com.gabutmen.ingetwoy.data.ReminderUnit
+import com.gabutmen.ingetwoy.data.model.Product
+import com.gabutmen.ingetwoy.data.model.ReminderOffset
+import com.gabutmen.ingetwoy.data.model.ReminderUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate

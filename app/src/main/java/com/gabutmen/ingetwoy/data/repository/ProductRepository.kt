@@ -9,4 +9,6 @@ class ProductRepository @Inject constructor(
     private val productDao: ProductDao
 ) {
     fun getAllProducts(): Flow<List<Product>> = productDao.getAll()
+
+    suspend fun insertProduct(product: Product) = productDao.insert(product)
 }

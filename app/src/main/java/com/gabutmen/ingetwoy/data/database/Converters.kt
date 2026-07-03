@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 class Converters {
     companion object {
-        val gson = Gson()
+        private val gson = Gson()
 
     }
 

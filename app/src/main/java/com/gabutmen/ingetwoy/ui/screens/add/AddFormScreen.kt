@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.gabutmen.ingetwoy.navigation.Routes
 import java.time.Instant
@@ -45,16 +46,11 @@ enum class DateField {
     EXPIRE
 }
 
-private fun dateConverter(millis: Long?): String {
-    if(millis == null) return "Select date"
-    val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-
-    return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFormScreen(navController: NavHostController) {
+    val viewModel = hiltViewModel<AddFormViewModel>()
+
     var productName by rememberSaveable { mutableStateOf("") }
     var notes by rememberSaveable { mutableStateOf("") }
 
@@ -140,7 +136,7 @@ fun AddFormScreen(navController: NavHostController) {
                 modifier = Modifier.clickable { currPicker = DateField.PURCHASE }
             ) {
                 TextField(
-                    value = dateConverter(purchaseDate),
+                    value = dateLongToStringConverter(purchaseDate),
                     onValueChange = {},
                     readOnly = true,
                     enabled = false,
@@ -152,7 +148,7 @@ fun AddFormScreen(navController: NavHostController) {
                 modifier = Modifier.clickable { currPicker = DateField.EXPIRE }
             ) {
                 TextField(
-                    value = dateConverter(expirationDate),
+                    value = dateLongToStringConverter(expirationDate),
                     onValueChange = {},
                     readOnly = true,
                     enabled = false,
@@ -162,6 +158,24 @@ fun AddFormScreen(navController: NavHostController) {
 
 
             Text("Reminder related field will be updated shortly")
+
+            Spacer(Modifier.height(8.dp))
+
+            Button(
+                onClick = {
+                    viewModel.onSaveClicked(
+                        name = productName,
+                        category = selectedCategory,
+                        notes = notes,
+                        purchaseDate = purchaseDate,
+                        expirationDate = expirationDate
+                    )
+                    navController.popBackStack()
+                },
+                enabled = productName.isNotBlank() && purchaseDate != null && expirationDate != null
+            ) {
+                Text("Save")
+            }
         }
     }
 
@@ -193,4 +207,12 @@ fun AddFormScreen(navController: NavHostController) {
             )
         }
     }
+
+}
+
+private fun dateLongToStringConverter(millis: Long?): String {
+    if(millis == null) return "Select date"
+    val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+
+    return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 }

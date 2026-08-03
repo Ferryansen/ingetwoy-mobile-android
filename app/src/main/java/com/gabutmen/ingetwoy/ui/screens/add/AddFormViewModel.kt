@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +33,6 @@ class AddFormViewModel @Inject constructor(
     }
 
     private fun dateLongToLocalConverter(millis: Long?): LocalDate {
-        return Instant.ofEpochMilli(requireNotNull(millis)).atZone(ZoneId.systemDefault()).toLocalDate()
+        return Instant.ofEpochMilli(requireNotNull(millis)).atZone(ZoneOffset.UTC).toLocalDate()
     }
 }

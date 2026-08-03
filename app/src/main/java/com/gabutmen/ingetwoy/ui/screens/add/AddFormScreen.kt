@@ -39,6 +39,7 @@ import androidx.navigation.NavHostController
 import com.gabutmen.ingetwoy.navigation.Routes
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 enum class DateField {
@@ -212,7 +213,7 @@ fun AddFormScreen(navController: NavHostController) {
 
 private fun dateLongToStringConverter(millis: Long?): String {
     if(millis == null) return "Select date"
-    val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+    val date = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
 
     return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 }

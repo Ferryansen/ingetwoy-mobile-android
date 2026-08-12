@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.gabutmen.ingetwoy.navigation.Routes
+import com.gabutmen.ingetwoy.util.ExpiryStatus
+import com.gabutmen.ingetwoy.util.daysUntilExpiry
+import com.gabutmen.ingetwoy.util.expiryStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +54,9 @@ fun HomeScreen(navController: NavHostController) {
             modifier = Modifier.padding(innerPadding)
         ) {
             items(products) { product ->
+                val daysRemain = daysUntilExpiry(product.expirationDate)
+                val expireStat = expiryStatus(daysRemain)
+
                 Row(
                     modifier = Modifier.fillMaxWidth()
                         .padding(8.dp),
@@ -66,7 +72,17 @@ fun HomeScreen(navController: NavHostController) {
                         )
                     }
                     Text(
-                        text = "Expiration on ${product.expirationDate}",
+                        text = when (expireStat) {
+                            ExpiryStatus.SAFE -> {
+                                "$daysRemain days left"
+                            }
+                            ExpiryStatus.EXPIRING_TODAY -> {
+                                "Last Chance!"
+                            }
+                            ExpiryStatus.EXPIRED -> {
+                                "EXPIRED"
+                            }
+                        }
                     )
                 }
             }

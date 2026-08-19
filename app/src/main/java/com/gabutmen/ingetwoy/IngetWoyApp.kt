@@ -7,8 +7,12 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.gabutmen.ingetwoy.worker.ReminderWorker
+import com.gabutmen.ingetwoy.worker.DDayReminderWorker
+import com.gabutmen.ingetwoy.worker.OffsetReminderWorker
 import dagger.hilt.android.HiltAndroidApp
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -24,15 +28,38 @@ class IngetWoyApp: Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        val reminderWorkRequest: PeriodicWorkRequest = PeriodicWorkRequestBuilder<ReminderWorker>(
-            24, TimeUnit.HOURS
-        ).build()
-
+        val dDayReminderWorkRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<DDayReminderWorker>(
+                24, TimeUnit.HOURS
+            ).setInitialDelay(calculateDelay(10, 0))
+                .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "reminder_check_work",
+            "d_day_reminder_work",
             ExistingPeriodicWorkPolicy.KEEP,
-            reminderWorkRequest
+            dDayReminderWorkRequest
         )
+
+        val offsetReminderWorkRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<OffsetReminderWorker>(
+                24, TimeUnit.HOURS
+            ).setInitialDelay(calculateDelay(12, 0))
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "offset_reminder_work",
+            ExistingPeriodicWorkPolicy.KEEP,
+            offsetReminderWorkRequest
+        )
+    }
+
+    fun calculateDelay(hour: Int, minute: Int): Duration {
+        val currentTime = LocalDateTime.now()
+        var targetTime = LocalDate.now().atTime(hour, minute)
+
+        if (targetTime.isBefore(currentTime)) {
+            targetTime = targetTime.plusDays(1)
+        }
+
+        return Duration.between(currentTime, targetTime)
     }
 }
 

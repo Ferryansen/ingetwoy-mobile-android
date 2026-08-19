@@ -13,5 +13,5 @@ data class Product(
     val purchaseDate: LocalDate,
     val expirationDate: LocalDate,
     val notes: String?,
-    val extraReminders: List<ReminderOffset> = emptyList()
+    val reminders: List<ReminderOffset> = emptyList()
 )

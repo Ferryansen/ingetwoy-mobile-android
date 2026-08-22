@@ -1,6 +1,8 @@
 package com.gabutmen.ingetwoy
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -28,6 +30,23 @@ class IngetWoyApp: Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
+        registerReminderWorkers()
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        val channelId = "reminder_channel"
+        val name = "Reminder Notif"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val description = "Channel to set IngetWoy's reminder notif"
+
+        val mChannel = NotificationChannel(channelId, name, importance)
+        mChannel.description = description
+        val notificationManager = this.getSystemService(NotificationManager::class.java)
+        requireNotNull(notificationManager){"Null Notification Manager"}.createNotificationChannel(mChannel)
+    }
+
+    private fun registerReminderWorkers() {
         val dDayReminderWorkRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<DDayReminderWorker>(
                 24, TimeUnit.HOURS
@@ -51,7 +70,7 @@ class IngetWoyApp: Application(), Configuration.Provider {
         )
     }
 
-    fun calculateDelay(hour: Int, minute: Int): Duration {
+    private fun calculateDelay(hour: Int, minute: Int): Duration {
         val currentTime = LocalDateTime.now()
         var targetTime = LocalDate.now().atTime(hour, minute)
 
